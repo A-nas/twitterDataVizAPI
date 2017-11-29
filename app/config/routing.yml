@@ -1,3 +1,7 @@
 app:
     resource: '@AppBundle/Controller/'
     type: annotation
+
+twitter: # add this to autogenerate my rest routers
+    type: rest
+    resource: 'AppBundle\Controller\TwitterController'
