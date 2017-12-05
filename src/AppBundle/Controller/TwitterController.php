@@ -14,12 +14,15 @@ class TwitterController extends Controller
 	 
 
     public function getWordsAction(Request $request){
-    	//$connection = new MongoClient();
     	//$viewHandler = $this->get('fos_rest.view_handler');
         //$view = View::create('{ "hello" : "word"} ');
         //$view->setFormat('json');
         //return $viewHandler->handle($view);
-        return new JsonResponse('{ "hello" : "word"}');
+		$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $query = new MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'));
+        $cursor = $manager->executeQuery('paperman.course', $query);
+        return new JsonResponse($cursor);
+        #return new JsonResponse('{ "hello" : "word"}');
     }
 }
 
