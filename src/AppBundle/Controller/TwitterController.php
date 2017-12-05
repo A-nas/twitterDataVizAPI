@@ -14,6 +14,7 @@ class TwitterController extends Controller
 	 
 
     public function getWordsAction(Request $request){
+    	//$connection = new MongoClient();
     	//$viewHandler = $this->get('fos_rest.view_handler');
         //$view = View::create('{ "hello" : "word"} ');
         //$view->setFormat('json');
