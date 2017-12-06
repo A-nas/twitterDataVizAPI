@@ -18,10 +18,10 @@ class TwitterController extends Controller
         //$view = View::create('{ "hello" : "word"} ');
         //$view->setFormat('json');
         //return $viewHandler->handle($view);
-		$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-        $query = new MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'));
+    	$manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $query = new \MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'));
         $cursor = $manager->executeQuery('paperman.course', $query);
-        return new JsonResponse($cursor);
+        return new JsonResponse(json_encode($cursor->toArray()));
         #return new JsonResponse('{ "hello" : "word"}');
     }
 }
