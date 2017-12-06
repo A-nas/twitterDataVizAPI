@@ -21,7 +21,8 @@ class TwitterController extends Controller
     	$manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $query = new \MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'));
         $cursor = $manager->executeQuery('paperman.course', $query);
-        return new JsonResponse(json_encode($cursor->toArray()));
+        //print(json_encode($cursor->toArray()));
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
         #return new JsonResponse('{ "hello" : "word"}');
     }
 }
