@@ -25,6 +25,27 @@ class TwitterController extends Controller
         return new JsonResponse( json_encode( $cursor->toArray() ) );
         #return new JsonResponse('{ "hello" : "word"}');
     }
+
+    public function getTopWords(Request $request){ // will return only hashtags
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+
+        $command = new MongoDB\Driver\Command( [
+        ['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
+        ['$unwind' => '$words'],
+        ['$match' => ['words' => '/^#/']],
+        ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
+        ['$sort' => [ 'total_amount' => -1 ] ],
+        ]);
+        $cursor = $manager->executeCommand('paperman.course', $command);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        /*$query = array(
+                     array('$project' => array('words' => array('$split' => ["$teweet", " "]))),
+                     array('$unwind' => "$words"),
+                     array('$match' => array('words' => '/^#/')),
+                     array('$group' => array('_id' => array('word' => 'words'), total_amount => array('$sum' => 1))),
+                     array('$sort' => array('total_amount' => -1)));*/
+    
+    }
 }
 
 ?>
