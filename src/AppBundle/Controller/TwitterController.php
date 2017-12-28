@@ -33,21 +33,34 @@ class TwitterController extends Controller
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
                 'aggregate' => 'course',
-                'pipeline' => [['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
-                ['$unwind' => '$words'],
-                //['$match' => ['words' => '^#']],
-                ['$match' => ['words' => new \MongoDB\BSON\Regex('^'.$this->type[$by])]],
-                ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
-                ['$sort' => [ 'total_amount' => -1 ] ],
-                ['$limit' => 10]],
+                'pipeline' => [
+                    ['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
+                    ['$unwind' => '$words'],
+                    ['$match' => ['words' => new \MongoDB\BSON\Regex('^'.$this->type[$by])]],
+                    ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
+                    ['$sort' => [ 'total_amount' => -1 ] ],
+                    ['$limit' => 10]
+                ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 
-    public function getTopnotesAction(Request $request){
+    public function getTweetbydayAction(Request $request){
 
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'course',
+                'pipeline' => [
+                    ['$group' => ['_id' => '$tweetDate' , 'total_amount' => ['$sum' => 1] ] ],
+                    //['$sort' => [ 'total_amount' => -1 ] ] //sort by date when date is formated
+                ],
+                'cursor' => new \stdClass,]);
+        $cursor = $manager->executeCommand('paperman', $command);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
+
+
 }
 
 ?>
