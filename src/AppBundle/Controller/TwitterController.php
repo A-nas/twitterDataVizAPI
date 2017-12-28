@@ -12,6 +12,7 @@ class TwitterController extends Controller
 {
 	// careful ! any route anotation added here will be ignored
 	 
+    public $type = array('Hashtag'=> '#','Mention'=>'@');
 
     public function getWordsAction(Request $request){
     	//$viewHandler = $this->get('fos_rest.view_handler');
@@ -26,30 +27,26 @@ class TwitterController extends Controller
         #return new JsonResponse('{ "hello" : "word"}');
     }
 
-    public function getTopwordsAction(Request $request){ // will return only hashtags
-        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
-        try{
-            $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
-            $command = new MongoDB\Driver\Command( [
-                ['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
-                ['$unwind' => '$words'],
-                ['$match' => ['words' => '/^#/']],
-                ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
-                ['$sort' => [ 'total_amount' => -1 ] ]
-                ]);
-            //$cursor = $manager->executeCommand('paperman.course', $command);
-            //return new JsonResponse( json_encode( $cursor->toArray() ) );
-        }catch (Exception $e) {
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    // remove backslashs and "'s" notation
+    public function getTopwordsAction(Request $request,$by){
+        if(!array_key_exists($by, $this->type)){
+            $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
+            http_response_code(500);
+            return new JsonResponse( json_encode( $error ) );
         }
-
-        /*$query = array(
-                     array('$project' => array('words' => array('$split' => ["$teweet", " "]))),
-                     array('$unwind' => "$words"),
-                     array('$match' => array('words' => '/^#/')),
-                     array('$group' => array('_id' => array('word' => 'words'), total_amount => array('$sum' => 1))),
-                     array('$sort' => array('total_amount' => -1)));*/
-    
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'course',
+                'pipeline' => [['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
+                ['$unwind' => '$words'],
+                //['$match' => ['words' => '^#']],
+                ['$match' => ['words' => new \MongoDB\BSON\Regex('^'.$this->type[$by])]],
+                ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
+                ['$sort' => [ 'total_amount' => -1 ] ],
+                ['$limit' => 10]],
+                'cursor' => new \stdClass,]);
+        $cursor = $manager->executeCommand('paperman', $command);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 }
 
