@@ -15,20 +15,16 @@ class TwitterController extends Controller
     public $type = array('Hashtag'=> '#','Mention'=>'@');
 
     public function getWordsAction(Request $request){
-    	//$viewHandler = $this->get('fos_rest.view_handler');
-        //$view = View::create('{ "hello" : "word"} ');
-        //$view->setFormat('json');
-        //return $viewHandler->handle($view);
+
     	$manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
-        $query = new \MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'));
+        $query = new \MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'), array('projection' => [ 'teweet' => 1 , 'tweetDate' => 1 ]));
         $cursor = $manager->executeQuery('paperman.course', $query);
-        //print(json_encode($cursor->toArray()));
         return new JsonResponse( json_encode( $cursor->toArray() ) );
-        #return new JsonResponse('{ "hello" : "word"}');
     }
 
     // remove backslashs and "'s" notation
     public function getTopwordsAction(Request $request,$by){
+
         if(!array_key_exists($by, $this->type)){
             $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
             http_response_code(500);
@@ -47,6 +43,10 @@ class TwitterController extends Controller
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
         return new JsonResponse( json_encode( $cursor->toArray() ) );
+    }
+
+    public function getTopnotesAction(Request $request){
+
     }
 }
 
