@@ -60,7 +60,25 @@ class TwitterController extends Controller
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 
+    //max per month ?
+    public function getToptweetsAction(Request $request){
 
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        //$query = new \MongoDB\Driver\Query([], [['$limit' => 10 ] , '$sort' => [ 'favorite' => -1 ]]);
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'course',
+                'pipeline' => [
+                    ['$project' => ['tweet' => '$teweet', 'favorite' => '$favorite'] ],
+                    ['$group' => ['_id' => ['tweets' => '$tweet'],'total_amount' => ['$sum' => 1] ] ]
+                    //['$group' => ['_id' => '$tweet'] ],
+                    //['$group' => [] ],
+                    ['$sort' => [ 'favorite' => -1 ] ],
+                    ['$limit' => 10],
+                ],
+                'cursor' => new \stdClass,]);        
+        $cursor = $manager->executeCommand('paperman', $command);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
+    }
 }
 
 ?>
