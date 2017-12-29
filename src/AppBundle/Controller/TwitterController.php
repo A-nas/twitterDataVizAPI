@@ -78,7 +78,7 @@ class TwitterController extends Controller
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 
-    //ne marche pas
+    //didnt work, must use eggregation instead
     public function gettopfavoriteAction(Request $request){
 
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
@@ -88,6 +88,23 @@ class TwitterController extends Controller
             '$limit' => 10,
         ]);
         $cursor = $manager->executeQuery('paperman.course', $query);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
+    }
+
+
+    //favorite per date
+    public function getToptweetperdayAction(Request $request){
+
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'course',
+                'pipeline' => [
+                    ['$group' => ['_id' => '$teweet' , 'nbrFavorite' => ['$sum' => '$favorite'] ] ],
+                    //['$sort' => [ 'total_amount' => -1 ] ] //sort by date when date is formated
+                ],
+                'cursor' => new \stdClass,]);
+        $cursor = $manager->executeCommand('paperman', $command);
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 }
