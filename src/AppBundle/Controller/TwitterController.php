@@ -98,15 +98,28 @@ class TwitterController extends Controller
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
-                'aggregate' => 'course',
+                'aggregate' => 'yay',
                 'pipeline' => [
-                    ['$group' => ['_id' => '$teweet' , 'nbrFavorite' => ['$sum' => '$favorite'] ] ],
-                    //['$sort' => [ 'total_amount' => -1 ] ] //sort by date when date is formated
+                    [
+                        '$project' => [
+                            'tweet' => '$teweet' ,
+                            'dates' => ['$dateToString' => [ 'format' => '%Y-%m-%d', 'date' => '$tweetDate' ]],
+                            'Favorite' => '$favorite'
+                                      ]
+                    ],
+                    ['$group' => 
+                    ['_id' => [
+                        'date' => '$dates'
+                              ],
+                        'FavoriteSum' => ['$sum' => '$Favorite'] ] ],
+                    ['$sort' => [ 'tweetDate' => -1 ] ] //sort by date when date is formated
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
+
+    //top ten favorite/comment/retweet end point
 }
 
 ?>
