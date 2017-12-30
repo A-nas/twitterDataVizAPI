@@ -13,7 +13,7 @@ class TwitterController extends Controller
 	// careful ! any route anotation added here will be ignored
 	 
     public $type = array('Hashtag'=> '#','Mention'=>'@');
-    public $topby = array('favorits' , 'retweets' , 'comments');
+    public $topby = array('favorits' => 'favorite', 'retweets' => 'retweet', 'comments' => 'comment');
 
     public function getWordsAction(Request $request){
 
@@ -64,7 +64,7 @@ class TwitterController extends Controller
     //max per month&year ?
     public function getToptweetsAction(Request $request,$by){
 
-        if(!in_array($by, $this->topby)){
+        if(!array_key_exists($by, $this->topby)){
             $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
             http_response_code(500);
             return new JsonResponse( json_encode( $error ) );
@@ -75,8 +75,8 @@ class TwitterController extends Controller
         $command = new \MongoDB\Driver\Command([
                 'aggregate' => 'course',
                 'pipeline' => [
-                    ['$project' => ['tweet' => '$teweet', $by => '$'.$by] ],
-                    ['$sort' => [ $by => -1 ] ],
+                    ['$project' => ['tweet' => '$teweet', '_'.$by => '$'.$this->topby[$by]] ],
+                    ['$sort' => [ $this->topby[$by] => -1 ] ],
                     ['$limit' => 10],
                 ],
                 'cursor' => new \stdClass,]);   
