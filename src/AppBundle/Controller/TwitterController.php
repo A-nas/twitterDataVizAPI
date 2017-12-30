@@ -61,7 +61,7 @@ class TwitterController extends Controller
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 
-    //max per month&year ?
+    //max per month&year ? *** must go to stack
     public function getToptweetsAction(Request $request,$by){
 
         if(!array_key_exists($by, $this->topby)){
@@ -74,9 +74,27 @@ class TwitterController extends Controller
         
         $command = new \MongoDB\Driver\Command([
                 'aggregate' => 'course',
-                'pipeline' => [
-                    ['$project' => ['tweet' => '$teweet', '_'.$by => '$'.$this->topby[$by]] ],
+                'pipeline' => [ // quand je change le parametre de favorite je recois un autre resultas
+                    ['$project' => ['tweet' => '$teweet', $this->topby[$by] => '$'.$this->topby[$by]] ],
                     ['$sort' => [ $this->topby[$by] => -1 ] ],
+                    ['$limit' => 10],
+                ],
+                'cursor' => new \stdClass,]);   
+        $cursor = $manager->executeCommand('paperman', $command);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
+    }
+
+    // deprecated
+    public function getToptweetssAction(Request $request){
+
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        //$query = new \MongoDB\Driver\Query([], [['$limit' => 10 ] , '$sort' => [ 'favorite' => -1 ]]);
+        
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'course',
+                'pipeline' => [
+                    ['$project' => ['tweet' => '$teweet', 'favorite' => '$favorite'] ],
+                    ['$sort' => [ 'favorite' => -1 ] ],
                     ['$limit' => 10],
                 ],
                 'cursor' => new \stdClass,]);   
