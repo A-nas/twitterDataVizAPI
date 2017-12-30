@@ -13,6 +13,7 @@ class TwitterController extends Controller
 	// careful ! any route anotation added here will be ignored
 	 
     public $type = array('Hashtag'=> '#','Mention'=>'@');
+    public $topby = array('favorits' , 'retweets' , 'comments');
 
     public function getWordsAction(Request $request){
 
@@ -61,16 +62,21 @@ class TwitterController extends Controller
     }
 
     //max per month&year ?
-    public function getToptweetsAction(Request $request){
+    public function getToptweetsAction(Request $request,$by){
 
+        if(!in_array($by, $this->topby)){
+            $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
+            http_response_code(500);
+            return new JsonResponse( json_encode( $error ) );
+        }
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         //$query = new \MongoDB\Driver\Query([], [['$limit' => 10 ] , '$sort' => [ 'favorite' => -1 ]]);
         
         $command = new \MongoDB\Driver\Command([
                 'aggregate' => 'course',
                 'pipeline' => [
-                    ['$project' => ['tweet' => '$teweet', 'favorite' => '$favorite'] ],
-                    ['$sort' => [ 'favorite' => -1 ] ],
+                    ['$project' => ['tweet' => '$teweet', $by => '$'.$by] ],
+                    ['$sort' => [ $by => -1 ] ],
                     ['$limit' => 10],
                 ],
                 'cursor' => new \stdClass,]);   
@@ -92,7 +98,7 @@ class TwitterController extends Controller
     }
 
 
-    //favorite per date
+    //favorite per date (must use MapReduce)
     public function getToptweetperdayAction(Request $request){
 
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
@@ -118,8 +124,6 @@ class TwitterController extends Controller
         $cursor = $manager->executeCommand('paperman', $command);
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
-
-    //top ten favorite/comment/retweet end point
 }
 
 ?>
