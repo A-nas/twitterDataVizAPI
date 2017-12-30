@@ -78,7 +78,7 @@ class TwitterController extends Controller
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 
-    //didnt work, must use eggregation instead
+    //works !! must add parameter to get top of all numeric values
     public function gettopfavoriteAction(Request $request){
 
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
