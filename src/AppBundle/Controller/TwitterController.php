@@ -142,6 +142,30 @@ class TwitterController extends Controller
         $cursor = $manager->executeCommand('paperman', $command);
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
+
+    // top words (use filter)
+    public function getTopfiltredwordsAction(Request $request){
+        $filter = array('as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'course',
+                'pipeline' => [
+                    ['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
+                    ['$unwind' => '$words'],
+                    //['$match' => ['words' => new \MongoDB\BSON\Regex('^'.$this->type[$by])]],
+                    ['$filter' => [ 
+                        'input' => ['the','in'],
+                        'as' => 'exc',
+                        'cond' => ['words' => [ '$nin' => '$$num' ]] ]],
+                    // add all properties
+                    ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
+                    ['$sort' => [ 'total_amount' => -1 ] ],
+                    ['$limit' => 10]
+                ],
+                'cursor' => new \stdClass,]);
+        $cursor = $manager->executeCommand('paperman', $command);
+        return new JsonResponse( json_encode( $cursor->toArray() ) );
+    }
 }
 
 ?>
