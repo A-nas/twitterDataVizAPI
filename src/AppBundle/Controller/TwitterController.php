@@ -145,18 +145,19 @@ class TwitterController extends Controller
 
     // top words (use filter)
     public function getTopfiltredwordsAction(Request $request){
-        $filter = array('as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
+        $filter = array('to','as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
                 'aggregate' => 'course',
                 'pipeline' => [
                     ['$project' => ['words' => ['$split' => ['$teweet',' '] ] ] ],
                     ['$unwind' => '$words'],
+                    ['$match' => [ 'words' => ['$nin' => $filter ]]],
                     //['$match' => ['words' => new \MongoDB\BSON\Regex('^'.$this->type[$by])]],
-                    ['$filter' => [ 
+                    /*['$filter' => [ 
                         'input' => ['the','in'],
                         'as' => 'exc',
-                        'cond' => ['words' => [ '$nin' => '$$num' ]] ]],
+                        'cond' => ['words' => [ '$nin' => '$$num' ]] ]],*/
                     // add all properties
                     ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
                     ['$sort' => [ 'total_amount' => -1 ] ],
