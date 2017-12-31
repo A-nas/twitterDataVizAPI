@@ -26,6 +26,10 @@ class TwitterController extends Controller
     // remove backslashs and "'s" notation
     public function getTopwordsAction(Request $request,$by){
 
+        if($by == 'Words'){
+            return $this->getTopWords();
+        }
+
         if(!array_key_exists($by, $this->type)){
             $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
             http_response_code(500);
@@ -143,9 +147,9 @@ class TwitterController extends Controller
         return new JsonResponse( json_encode( $cursor->toArray() ) );
     }
 
-    // top words (use filter)
-    public function getTopfiltredwordsAction(Request $request){
-        $filter = array('to','as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
+    // imbriquer
+    private function getTopWords(){
+        $filter = array('how','They','them','into','even','de','My','Why','had','us','--','You','It','been','don\'t','their','if','am','If','now','when','make','my','we','A','or','He','no','than','very','more','an','me','out','what','get','they','so','but','do','would','should','We','about','just','his','who','from','this','he','all','by','was','has','your','you','not','be','','it','our','with','-','at','&',':\"',':\\','The','are','that','\\','I','to','as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
                 'aggregate' => 'course',
@@ -161,7 +165,7 @@ class TwitterController extends Controller
                     // add all properties
                     ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
                     ['$sort' => [ 'total_amount' => -1 ] ],
-                    ['$limit' => 10]
+                    ['$limit' => 50]
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
