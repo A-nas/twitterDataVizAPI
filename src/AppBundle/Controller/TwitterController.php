@@ -48,7 +48,8 @@ class TwitterController extends Controller
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( json_encode( $cursor->toArray() ) , 200, array('Access-Control-Allow-Origin'=> '*'));
     }
 
     public function getTweetbydayAction(Request $request){
