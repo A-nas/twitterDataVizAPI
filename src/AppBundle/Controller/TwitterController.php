@@ -20,7 +20,9 @@ class TwitterController extends Controller
     	$manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $query = new \MongoDB\Driver\Query(array('tweetDate' => '4 nov. 2014'), array('projection' => [ 'teweet' => 1 , 'tweetDate' => 1 ]));
         $cursor = $manager->executeQuery('paperman.course', $query);
-        return new JsonResponse(json_encode( $cursor->toArray() ) );
+        //return new JsonResponse(json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
+
     }
 
     // remove backslashs and "'s" notation
@@ -33,7 +35,8 @@ class TwitterController extends Controller
         if(!array_key_exists($by, $this->type)){
             $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
             http_response_code(500);
-            return new JsonResponse( json_encode( $error ) );
+            //return new JsonResponse( json_encode( $error ) );
+            return new JsonResponse( $error  , 500, array('Access-Control-Allow-Origin'=> '*'));
         }
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
@@ -63,7 +66,9 @@ class TwitterController extends Controller
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
+
     }
 
     //max per month&year ? *** must go to stack
@@ -72,7 +77,8 @@ class TwitterController extends Controller
         if(!array_key_exists($by, $this->topby)){
             $error = array("Success" => "False","Anmalie" =>"parametre non pris en charge");
             http_response_code(500);
-            return new JsonResponse( json_encode( $error ) );
+            //return new JsonResponse( json_encode( $error ) );
+            return new JsonResponse( $error  , 500 , array('Access-Control-Allow-Origin'=> '*'));
         }
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         //$query = new \MongoDB\Driver\Query([], [['$limit' => 10 ] , '$sort' => [ 'favorite' => -1 ]]);
@@ -86,7 +92,8 @@ class TwitterController extends Controller
                 ],
                 'cursor' => new \stdClass,]);   
         $cursor = $manager->executeCommand('paperman', $command);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
     }
 
     // deprecated
@@ -104,7 +111,8 @@ class TwitterController extends Controller
                 ],
                 'cursor' => new \stdClass,]);   
         $cursor = $manager->executeCommand('paperman', $command);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
     }
 
     //works !! must add parameter to get top of all numeric values
@@ -117,7 +125,8 @@ class TwitterController extends Controller
             '$limit' => 10,
         ]);
         $cursor = $manager->executeQuery('paperman.course', $query);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
     }
 
 
@@ -145,13 +154,14 @@ class TwitterController extends Controller
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
     }
 
     // imbriquer
     private function getTopWords(){
 
-        $filter = array('how','They','them','into','even','de','My','Why','had','us','--','You','It','been','don\'t','their','if','am','If','now','when','make','my','we','A','or','He','no','than','very','more','an','me','out','what','get','they','so','but','do','would','should','We','about','just','his','who','from','this','he','all','by','was','has','your','you','not','be','','it','our','with','-','at','&',':\"',':\\','The','are','that','\\','I','to','as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
+        $filter = array('-','how','They','them','into','even','de','My','Why','had','us','--','You','It','been','don\'t','their','if','am','If','now','when','make','my','we','A','or','He','no','than','very','more','an','me','out','what','get','they','so','but','do','would','should','We','about','just','his','who','from','this','he','all','by','was','has','your','you','not','be','','it','our','with','-','at','&',':\"',':\\','The','are','that','\\','I','to','as', 'the', 'a', 's', 'in', 'on', '.', ',', 'is', 'and', 'of', 'for'); // upper case included
         
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
@@ -172,7 +182,8 @@ class TwitterController extends Controller
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
-        return new JsonResponse( json_encode( $cursor->toArray() ) );
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
     }
 }
 
