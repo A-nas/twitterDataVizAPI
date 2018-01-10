@@ -47,7 +47,7 @@ class TwitterController extends Controller
                     ['$match' => ['words' => new \MongoDB\BSON\Regex('^'.$this->type[$by])]],
                     ['$group' => ['_id' => ['word' => '$words'],'total_amount' => ['$sum' => 1] ] ],
                     ['$sort' => [ 'total_amount' => -1 ] ],
-                    ['$limit' => 10]
+                    ['$limit' => 50]
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
