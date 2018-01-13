@@ -149,8 +149,8 @@ class TwitterController extends Controller
                     ['_id' => [
                         'date' => '$dates'
                               ],
-                        'FavoriteSum' => ['$sum' => '$Favorite'] ] ],
-                    ['$sort' => [ 'tweetDate' => 1 ] ] //sort by date when date is formated
+                        'tweetCount' => ['$sum' => '$Favorite'] ] ],
+                   // ['$sort' => [ 'tweetDate' => 1 ] ] //sort by date when date is formated
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
