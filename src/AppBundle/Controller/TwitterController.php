@@ -150,7 +150,7 @@ class TwitterController extends Controller
                         'date' => '$dates'
                               ],
                         'FavoriteSum' => ['$sum' => '$Favorite'] ] ],
-                    ['$sort' => [ 'tweetDate' => -1 ] ] //sort by date when date is formated
+                    ['$sort' => [ 'tweetDate' => 1 ] ] //sort by date when date is formated
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
