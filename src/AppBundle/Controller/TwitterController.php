@@ -140,8 +140,9 @@ class TwitterController extends Controller
                 'pipeline' => [
                     [
                         '$project' => [
-                            'tweet' => '$teweet' ,
-                            'dates' => ['$dateToString' => [ 'format' => '%Y-%m-%d', 'date' => '$tweetDate' ]],
+                            //'tweet' => '$teweet' ,
+                            //'dates' => ['$dateToString' => [ 'format' => '%Y-%m-%d', 'date' => '$tweetDate' ]],
+                            'dates' => ['$tweetDate'],
                             'Favorite' => '$favorite'
                                       ]
                     ],
@@ -150,7 +151,8 @@ class TwitterController extends Controller
                         'date' => '$dates'
                               ],
                         'tweetCount' => ['$sum' => '$Favorite'] ] ],
-                   // ['$sort' => [ 'tweetDate' => 1 ] ] //sort by date when date is formated
+                    ['$sort' => [ 'tweetDate' => 1 ]], //sort by date when date is formated
+                    ['$limit' => 55],
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
