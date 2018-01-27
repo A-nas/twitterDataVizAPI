@@ -59,10 +59,10 @@ class TwitterController extends Controller
 
         $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
         $command = new \MongoDB\Driver\Command([
-                'aggregate' => 'course',
+                'aggregate' => 'yay',
                 'pipeline' => [
                     ['$group' => ['_id' => '$tweetDate' , 'total_amount' => ['$sum' => 1] ] ],
-                    //['$sort' => [ 'total_amount' => -1 ] ] //sort by date when date is formated
+                    ['$sort' => [ 'total_amount' => -1 ] ] //sort by date when date is formated
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
@@ -141,17 +141,17 @@ class TwitterController extends Controller
                     [
                         '$project' => [
                             //'tweet' => '$teweet' ,
-                            //'dates' => ['$dateToString' => [ 'format' => '%Y-%m-%d', 'date' => '$tweetDate' ]],
+                            ///'dates' => ['$dateToString' => [ 'format' => '%Y-%m-%d', 'date' => '$tweetDate' ]],
+                            //'dates' => ['$dateFromString' => [ 'dateString' =>  <exp> ]],
                             'dates' => ['$tweetDate'],
                             'Favorite' => '$favorite'
                                       ]
                     ],
                     ['$group' => 
-                    ['_id' => [
-                        'date' => '$dates'
-                              ],
+                    ['_id' => 
+                        '$dates',
                         'tweetCount' => ['$sum' => '$Favorite'] ] ],
-                    ['$sort' => [ 'tweetDate' => 1 ]], //sort by date when date is formated
+                    ['$sort' => [ 'dates' => 1 ]], //sort by date when date is formated
                     ['$limit' => 55],
                 ],
                 'cursor' => new \stdClass,]);
