@@ -154,7 +154,7 @@ class TwitterController extends Controller
                               //[ 'month' => '$month' , 'year' => '$year' ],
                      'tweetCount' => ['$sum' => '$Favorite'] ] ],
                     ['$sort' => [ 'year' => 1 , 'month' => 1 ]], //sort by date when date is formated
-                    ['$limit' => 55],
+                    //['$limit' => 55],
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
@@ -185,7 +185,38 @@ class TwitterController extends Controller
                               [ 'month' => '$month' , 'year' => '$year' ],
                      'tweetCount' => ['$sum' => '$Favorite'] ] ],
                     ['$sort' => [ 'year' => 1 , 'month' => 1 ]], //sort by date when date is formated
-                    ['$limit' => 55],
+                    //['$limit' => 55],
+                ],
+                'cursor' => new \stdClass,]);
+        $cursor = $manager->executeCommand('paperman', $command);
+        //return new JsonResponse( json_encode( $cursor->toArray() ) );
+        return new JsonResponse( $cursor->toArray()  , 200, array('Access-Control-Allow-Origin'=> '*'));
+    }
+
+
+            public function getToptweetperyearAction(Request $request){
+
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $manager = new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $command = new \MongoDB\Driver\Command([
+                'aggregate' => 'yay',
+                'pipeline' => [
+                    [
+                        '$project' => [
+                            //'tweet' => '$teweet' ,
+                            ///'dates' => ['$dateToString' => [ 'format' => '%Y-%m-%d', 'date' => '$tweetDate' ]],
+                            //'dates' => ['$dateFromString' => [ 'dateString' =>  <exp> ]],
+                            'year' => [ '$year' => '$tweetDate' ],
+                            //'dates' => ['$tweetDate'],
+                            'Favorite' => '$favorite'
+                                      ]
+                    ],
+                    ['$group' => 
+                    ['_id' => //'$dates',
+                              [ 'year' => '$year' ],
+                     'tweetCount' => ['$sum' => '$Favorite'] ] ],
+                    ['$sort' => [ 'year' => 1 , 'month' => 1 ]], //sort by date when date is formated
+                    //['$limit' => 55],
                 ],
                 'cursor' => new \stdClass,]);
         $cursor = $manager->executeCommand('paperman', $command);
