@@ -11,5 +11,11 @@ $ cd twitterDataVizAPI
 * navigate to directory and run the following command :
 
 ```bash
-$ ng serve
+$ php bin/console server:start
 ```
+
+* to update routs run the following command :
+```bash
+$ php bin/console debug:router
+```
+
